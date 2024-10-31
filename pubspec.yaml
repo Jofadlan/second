@@ -1,7 +1,7 @@
 name: myapp
 description: "A new Flutter project."
 
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -18,12 +18,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  flutter_launcher_icons: ^0.9.2 # Menambahkan flutter_launcher_icons untuk logo aplikasi
+  flutter_launcher_icons: ^0.9.2  # Pastikan menggunakan versi terbaru jika tersedia
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/logo.png" # Lokasi file logo baru
+  image_path: "assets/logo.png"  # Pastikan path benar
+  adaptive_icon_background: "#ffffff"  # Background ikon adaptif (khusus Android)
+  adaptive_icon_foreground: "assets/logo.png"  # Foreground ikon adaptif (khusus Android)
 
 flutter:
   uses-material-design: true
