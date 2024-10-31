@@ -39,6 +39,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void _navigateToHome() {
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
