@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.google.gms:google-services:4.4.2'  // Ensure the correct syntax and version format
+    }
+}
+
 allprojects {
     repositories {
         google()

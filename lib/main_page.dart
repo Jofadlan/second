@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 
 class HomePage extends StatefulWidget {
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
     );
     if (pickedDate != null) {
       setState(() {
-        _tanggalController.text = "${pickedDate.day}, ${pickedDate.month}, ${pickedDate.year}";
+        _tanggalController.text = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
       });
     }
   }
@@ -45,20 +46,34 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _submitForm() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Form Submitted"),
-        content: Text("Selected Image: ${selectedImageFile?.path}\nKeterangan: ${_keteranganController.text}\nTanggal: ${_tanggalController.text}"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
+  Future<void> _submitForm() async {
+    if (selectedImageFile != null &&
+        _keteranganController.text.isNotEmpty &&
+        _tanggalController.text.isNotEmpty) {
+      await FirebaseFirestore.instance.collection('submissions').add({
+        'imagePath': selectedImageFile!.path,
+        'keterangan': _keteranganController.text,
+        'tanggal': _tanggalController.text,
+      });
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SubmissionListPage()),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Form Incomplete"),
+          content: const Text("Please fill all fields and select an image."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -69,10 +84,7 @@ class _HomePageState extends State<HomePage> {
         title: const Center(
           child: Text(
             'Beranda',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.white
-            ),
+            style: TextStyle(fontSize: 20, color: Colors.white),
           ),
         ),
       ),
@@ -134,7 +146,7 @@ class _HomePageState extends State<HomePage> {
               TextField(
                 controller: _tanggalController,
                 decoration: InputDecoration(
-                  hintText: "12, 12, 2023",
+                  hintText: "12-12-2023",
                   filled: true,
                   fillColor: Colors.grey[300],
                   border: OutlineInputBorder(
@@ -167,6 +179,57 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class SubmissionListPage extends StatelessWidget {
+  const SubmissionListPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Submitted Forms"),
+        backgroundColor: Colors.indigo[800],
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('submissions').snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("No submissions yet."));
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+              return Card(
+                margin: const EdgeInsets.all(8.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      data['imagePath'] != null
+                          ? Image.file(File(data['imagePath']), height: 100, width: 100)
+                          : const SizedBox.shrink(),
+                      const SizedBox(height: 8),
+                      Text("Keterangan: ${data['keterangan']}"),
+                      const SizedBox(height: 4),
+                      Text("Tanggal: ${data['tanggal']}"),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
