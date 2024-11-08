@@ -6,7 +6,7 @@ workflows:
     triggers:
       git:
         branch_patterns:
-          - "main"  # Ganti dengan nama branch yang sesuai
+          - "master"  # Ganti dengan nama branch yang sesuai
     environment:
       vars:
         FLUTTER_VERSION: "stable"
