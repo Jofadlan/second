@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 
+import 'storage_page.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -55,9 +57,20 @@ class _HomePageState extends State<HomePage> {
         'keterangan': _keteranganController.text,
         'tanggal': _tanggalController.text,
       });
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const SubmissionListPage()),
+
+      // Show success message
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Success"),
+          content: const Text("Submission successful!"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
       );
     } else {
       showDialog(
@@ -87,6 +100,17 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(fontSize: 20, color: Colors.white),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.storage),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const StoragePage()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -179,57 +203,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class SubmissionListPage extends StatelessWidget {
-  const SubmissionListPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Submitted Forms"),
-        backgroundColor: Colors.indigo[800],
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('submissions').snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("No submissions yet."));
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-              return Card(
-                margin: const EdgeInsets.all(8.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      data['imagePath'] != null
-                          ? Image.file(File(data['imagePath']), height: 100, width: 100)
-                          : const SizedBox.shrink(),
-                      const SizedBox(height: 8),
-                      Text("Keterangan: ${data['keterangan']}"),
-                      const SizedBox(height: 4),
-                      Text("Tanggal: ${data['tanggal']}"),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
       ),
     );
   }
