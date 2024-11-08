@@ -1,7 +1,7 @@
 workflows:
   ios:
     name: Build IPA for Ios
-    instance_type: mac_mini
+    instance_type: mac_limited
     max_build_duration: 120
     environment:
       vars:
