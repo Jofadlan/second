@@ -3,10 +3,6 @@ workflows:
     name: Build IPA for ElectricDocs
     instance_type: mac_mini
     max_build_duration: 120
-    triggers:
-      git:
-        branch_patterns:
-          - "master"  # Ganti dengan nama branch yang sesuai
     environment:
       vars:
         FLUTTER_VERSION: "stable"
