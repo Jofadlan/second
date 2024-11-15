@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.indigo[800],
         title: const Center(
           child: Text(
-            'Beranda',
+            'Home Page',
             style: TextStyle(fontSize: 20, color: Colors.white),
           ),
         ),
