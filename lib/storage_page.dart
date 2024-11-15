@@ -88,7 +88,9 @@ class StoragePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Storage"),
+        title: const Text("Storage",
+        style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.indigo[800],
       ),
       body: StreamBuilder(

@@ -102,7 +102,10 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.storage),
+            icon: const Icon(
+              Icons.storage,
+              color: Colors.white,
+            ),
             onPressed: () {
               Navigator.push(
                 context,
